@@ -59,6 +59,9 @@
 bool use_op_timestamp = false;
 #endif
 /*Anderson-OP_timestamp-01+]*/
+
+#include "printk_interface.h"
+
 /*
  * Architectures can override it:
  */
@@ -1304,6 +1307,10 @@ asmlinkage int vprintk_emit(int facility, int level,
 	#endif
 	/*Anderson-OP_timestamp-01+]*/
 
+	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+			return 0;
+
 	boot_delay_msec();
 	printk_delay();
 
@@ -1501,6 +1508,10 @@ asmlinkage int printk(const char *fmt, ...)
 {
 	va_list args;
 	int r;
+
+	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+		return 0;
 
 #ifdef CONFIG_KGDB_KDB
 	if (unlikely(kdb_trap_printk)) {
