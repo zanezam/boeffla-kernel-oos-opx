@@ -85,20 +85,20 @@ if [ "lov_presets" == "$1" ]; then
 	echo "Power extreme~"
 	echo "Gov: zzmoove / performance"
 	echo "^Sched: row"
-	echo "^CPU: 2880 / no uv"
-	echo "^GPU: 330-657;"
+	echo "^CPU: 2457 / no uv"
+	echo "^GPU: 389-578;"
 	
 	echo "Power~"
 	echo "Gov: ondemand / standard"
 	echo "^Sched: row"
-	echo "^CPU: 2726 / no uv"
-	echo "^GPU: 200-657;"
+	echo "^CPU: 2265 / no uv"
+	echo "^GPU: 330-578;"
 	
 	echo "Standard~"
 	echo "Gov: interactive / standard"
 	echo "^Sched: row"
-	echo "^CPU: 2457 / no uv"
-	echo "^GPU: 27-578;"
+	echo "^CPU: 2265 / no uv"
+	echo "^GPU: 200-578;"
 	
 	echo "Battery friendly~"
 	echo "Gov: interactive / standard"
@@ -125,36 +125,36 @@ if [ "conf_presets" == "$1" ]; then
 		# gov, gov prof, sched int, sched ext, cpu max, cpu uv, gpu freq, gpu uv
 		echo "zzmoove;zzmoove - performance;"
 		echo "row;row;"
-		echo "2880000;None;"
-		echo "4,0;None"
+		echo "2457600;None;"
+		echo "2,0;None"
 	fi
 	if [ "Power" ==  "$2" ]; then
 		# gov, gov prof, sched int, sched ext, cpu max, cpu uv, gpu freq, gpu uv
 		echo "ondemand;ondemand - standard;"
 		echo "row;row;"
-		echo "2726400;None;"
-		echo "5,0;None"
+		echo "2265600;None;"
+		echo "3,0;None"
 	fi
 	if [ "Standard" ==  "$2" ]; then
 		# gov, gov prof, sched int, sched ext, cpu max, cpu uv, gpu freq, gpu uv
 		echo "interactive;standard;"
 		echo "row;row;"
-		echo "2457600;None;"
-		echo "6,1;None"
+		echo "2265600;None;"
+		echo "4,0;None"
 	fi
 	if [ "Battery friendly" ==  "$2" ]; then
 		# gov, gov prof, sched int, sched ext, cpu max, cpu uv, gpu freq, gpu uv
 		echo "interactive;standard;"
 		echo "zen;zen;"
 		echo "1728000;undervolt -25mV;"
-		echo "6,4;None"
+		echo "5,3;None"
 	fi
 	if [ "Battery saving" ==  "$2" ]; then
 		# gov, gov prof, sched int, sched ext, cpu max, cpu uv, gpu freq, gpu uv
 		echo "zzmoove;zzmoove - battery yank;"
 		echo "zen;zen;"
 		echo "1497600;undervolt light;"
-		echo "6,6;None"
+		echo "5,5;None"
 	fi
 	exit 0
 fi
