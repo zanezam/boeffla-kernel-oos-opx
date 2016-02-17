@@ -741,21 +741,21 @@ if [ "apply_governor_profile" == "$1" ]; then
 	fi
 
 	if [ "interactive - standard" == "$2" ]; then
-		echo "20000 1400000:40000 1700000:20000" > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay 
-		echo "0" > /sys/devices/system/cpu/cpufreq/interactive/boost 
-		echo "" > /sys/devices/system/cpu/cpufreq/interactive/boostpulse 
-		echo "80000" > /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration 
-		echo "90" > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 
-		echo "1190400" > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 
-		echo "1" > /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 
-		echo "40000" > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 
-		echo "100000" > /sys/devices/system/cpu/cpufreq/interactive/sampling_down_factor 
-		echo "1036800" > /sys/devices/system/cpu/cpufreq/interactive/sync_freq 
-		echo "85 1500000:90 1800000:70" > /sys/devices/system/cpu/cpufreq/interactive/target_loads 
-		echo "30000" > /sys/devices/system/cpu/cpufreq/interactive/timer_rate 
-		echo "20000" > /sys/devices/system/cpu/cpufreq/interactive/timer_slack 
-		echo "1190400" > /sys/devices/system/cpu/cpufreq/interactive/up_threshold_any_cpu_freq 
-		echo "50" > /sys/devices/system/cpu/cpufreq/interactive/up_threshold_any_cpu_load 
+		echo "10000 1800000:20000" > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
+		echo "0" > /sys/devices/system/cpu/cpufreq/interactive/boost
+		echo "" > /sys/devices/system/cpu/cpufreq/interactive/boostpulse
+		echo "80000" > /sys/devices/system/cpu/cpufreq/interactive/boostpulse_duration
+		echo "90" > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+		echo "1190400" > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
+		echo "1" > /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
+		echo "20000" > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+		echo "50000" > /sys/devices/system/cpu/cpufreq/interactive/sampling_down_factor
+		echo "0" > /sys/devices/system/cpu/cpufreq/interactive/sync_freq
+		echo "85 1500000:90" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
+		echo "50000" > /sys/devices/system/cpu/cpufreq/interactive/timer_rate
+		echo "80000" > /sys/devices/system/cpu/cpufreq/interactive/timer_slack
+		echo "0" > /sys/devices/system/cpu/cpufreq/interactive/up_threshold_any_cpu_freq
+		echo "0" > /sys/devices/system/cpu/cpufreq/interactive/up_threshold_any_cpu_load
 
 		busybox sleep 0.5s
 		busybox sync
