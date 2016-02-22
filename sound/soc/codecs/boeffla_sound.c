@@ -46,8 +46,8 @@ static int debug;			// debug switch
 
 static int headphone_volume_l;
 static int headphone_volume_r;
-static int speaker_volume_l;
-static int speaker_volume_r;
+//static int speaker_volume_l;
+//static int speaker_volume_r;
 //static int mic_level;
 
 
@@ -87,17 +87,17 @@ unsigned int boeffla_sound_hook_taiko_write(unsigned int reg, unsigned int value
 			break;
 		}
 
-		case TAIKO_A_CDC_RX3_VOL_CTL_B2_CTL: // speaker
-		{
-			value = speaker_volume_l;
-			break;
-		}
+//		case TAIKO_A_CDC_RX3_VOL_CTL_B2_CTL: // speaker
+//		{
+//			value = speaker_volume_l;
+//			break;
+//		}
 
-		case TAIKO_A_CDC_RX7_VOL_CTL_B2_CTL: // speaker
-		{
-			value = speaker_volume_r;
-			break;
-		}
+//		case TAIKO_A_CDC_RX7_VOL_CTL_B2_CTL: // speaker
+//		{
+//			value = speaker_volume_r;
+//			break;
+//		}
 
 //		case TAIKO_A_CDC_TX7_VOL_CTL_GAIN: // mic level general
 //		{
@@ -122,8 +122,8 @@ static void reset_boeffla_sound(void)
 	// set all boeffla sound config settings to defaults
 	headphone_volume_l = HEADPHONE_DEFAULT;
 	headphone_volume_r = HEADPHONE_DEFAULT;
-	speaker_volume_l = SPEAKER_DEFAULT;
-	speaker_volume_r = SPEAKER_DEFAULT;
+//	speaker_volume_l = SPEAKER_DEFAULT;
+//	speaker_volume_r = SPEAKER_DEFAULT;
 //	mic_level = MICLEVEL_DEFAULT;
 
 	if (debug)
@@ -137,8 +137,8 @@ static void reset_audio_hub(void)
 	taiko_write_no_hook(codec, TAIKO_A_CDC_RX1_VOL_CTL_B2_CTL, HEADPHONE_DEFAULT + HEADPHONE_REG_OFFSET);
 	taiko_write_no_hook(codec, TAIKO_A_CDC_RX2_VOL_CTL_B2_CTL, HEADPHONE_DEFAULT + HEADPHONE_REG_OFFSET);
 
-	taiko_write_no_hook(codec, TAIKO_A_CDC_RX3_VOL_CTL_B2_CTL, SPEAKER_DEFAULT + SPEAKER_REG_OFFSET);
-	taiko_write_no_hook(codec, TAIKO_A_CDC_RX7_VOL_CTL_B2_CTL, SPEAKER_DEFAULT + SPEAKER_REG_OFFSET);
+//	taiko_write_no_hook(codec, TAIKO_A_CDC_RX3_VOL_CTL_B2_CTL, SPEAKER_DEFAULT + SPEAKER_REG_OFFSET);
+//	taiko_write_no_hook(codec, TAIKO_A_CDC_RX7_VOL_CTL_B2_CTL, SPEAKER_DEFAULT + SPEAKER_REG_OFFSET);
 
 //	taiko_write_no_hook(codec, TAIKO_A_CDC_TX7_VOL_CTL_GAIN, MICLEVEL_DEFAULT + MICLEVEL_REG_OFFSET);
 
@@ -249,9 +249,11 @@ static ssize_t headphone_volume_store(struct device *dev, struct device_attribut
 }
 
 
+/* this is currently not implemented
+
 // Speaker volume
 
-static ssize_t speaker_volume_show(struct device *dev, struct device_attribute *attr, char *buf)
+ * static ssize_t speaker_volume_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	// print current values
 	return sprintf(buf, "Speaker volume:\nLeft: %d\nRight: %d\n", 
@@ -305,6 +307,8 @@ static ssize_t speaker_volume_store(struct device *dev, struct device_attribute 
 
 	return count;
 }
+* 
+* */
 
 /* this is currently not yet implemented...
 
@@ -494,7 +498,7 @@ static ssize_t version_show(struct device *dev, struct device_attribute *attr, c
 // define objects
 static DEVICE_ATTR(boeffla_sound, S_IRUGO | S_IWUGO, boeffla_sound_show, boeffla_sound_store);
 static DEVICE_ATTR(headphone_volume, S_IRUGO | S_IWUGO, headphone_volume_show, headphone_volume_store);
-static DEVICE_ATTR(speaker_volume, S_IRUGO | S_IWUGO, speaker_volume_show, speaker_volume_store);
+//static DEVICE_ATTR(speaker_volume, S_IRUGO | S_IWUGO, speaker_volume_show, speaker_volume_store);
 //static DEVICE_ATTR(mic_level_general, S_IRUGO | S_IWUGO, mic_level_general_show, mic_level_general_store);
 static DEVICE_ATTR(debug, S_IRUGO | S_IWUGO, debug_show, debug_store);
 static DEVICE_ATTR(register_dump, S_IRUGO | S_IWUGO, register_dump_show, NULL);
@@ -504,7 +508,7 @@ static DEVICE_ATTR(version, S_IRUGO | S_IWUGO, version_show, NULL);
 static struct attribute *boeffla_sound_attributes[] = {
 	&dev_attr_boeffla_sound.attr,
 	&dev_attr_headphone_volume.attr,
-	&dev_attr_speaker_volume.attr,
+//	&dev_attr_speaker_volume.attr,
 //	&dev_attr_mic_level_general.attr,
 	&dev_attr_debug.attr,
 	&dev_attr_register_dump.attr,
