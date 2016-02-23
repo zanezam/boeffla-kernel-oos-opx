@@ -228,6 +228,7 @@ static atomic_t key_reverse;
 static struct proc_dir_entry *prEntry_dtap = NULL;
 static struct proc_dir_entry *prEntry_coodinate  = NULL;
 static struct proc_dir_entry *prEntry_double_tap = NULL;
+static struct proc_dir_entry *prEntry_sweep_wake_tap = NULL;
 static struct proc_dir_entry *prEntry_vendor_id  = NULL;
 
 
@@ -1518,6 +1519,7 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 	}
 #endif
 // carlo@oneplus.net 2015-05-25, end.
+
 	TPD_DEBUG("detect %s gesture\n", gesture == DouTap ? "double tap" :
                                                         gesture == UpVee ? "up vee" :
                                                         gesture == DownVee ? "down vee" :
@@ -1536,7 +1538,15 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 	synaptics_get_coordinate_point(ts);
 	if((gesture == DouTap && DouTap_gesture)||(gesture == RightVee && RightVee_gesture)\
         ||(gesture == LeftVee && LeftVee_gesture)||(gesture == UpVee && UpVee_gesture)\
+        ||(gesture == Left2RightSwip && Left2RightSwip_gesture)||(gesture == Right2LeftSwip && Right2LeftSwip_gesture)\
+        ||(gesture == Up2DownSwip && Up2DownSwip_gesture)||(gesture == Down2UpSwip && Down2UpSwip_gesture)\
         ||(gesture == Circle && Circle_gesture)||(gesture == DouSwip && DouSwip_gesture)){
+
+		// simulate double tap gesture in case we detected a horizontal or vertical swipe
+		if ((gesture == Left2RightSwip) || (gesture == Right2LeftSwip) ||
+			(gesture == Up2DownSwip) || (gesture == Down2UpSwip))
+			gesture = DouTap;
+
         gesture_upload = gesture;
 		input_report_key(ts->input_dev, keyCode, 1);
 		input_sync(ts->input_dev);
@@ -2100,6 +2110,32 @@ static int tp_double_write_func(struct file *file, const char __user *buffer, si
 				TPD_ERR("Please enter 0 or 1 to open or close the double-tap function\n");
 		}
 	}
+	return count;
+}
+
+static int tp_sweep_wake_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+{
+	int ret = 0;
+	char page[PAGESIZE];
+	ret = sprintf(page, "%d\n", Left2RightSwip_gesture);
+	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
+	return ret;
+}
+
+static int tp_sweep_wake_write_func(struct file *file, const char __user *buffer, size_t count, loff_t *ppos)
+{
+	char buf[10];
+	if( count > 2)
+		return count;
+	if( copy_from_user(buf, buffer, count) ){
+		printk(KERN_INFO "%s: read proc input error.\n", __func__);
+		return count;
+	}
+
+	Left2RightSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
+	Right2LeftSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
+	Up2DownSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
+	Down2UpSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
 	return count;
 }
 
@@ -3774,6 +3810,13 @@ static const struct file_operations tp_double_proc_fops = {
 	.owner = THIS_MODULE,
 };
 
+static const struct file_operations tp_sweep_wake_proc_fops = {
+	.write = tp_sweep_wake_write_func,
+	.read =  tp_sweep_wake_read_func,
+	.open = simple_open,
+	.owner = THIS_MODULE,
+};
+
 static const struct file_operations coordinate_proc_fops = {
 	.read =  coordinate_proc_read_func,
 	.open = simple_open,
@@ -3864,6 +3907,14 @@ static int init_synaptics_proc(void)
 			ret = -ENOMEM;
 			printk(KERN_INFO"init_synaptics_proc: Couldn't create proc entry\n");
 		}
+
+		prEntry_sweep_wake_tap = proc_create( "sweep_wake_enable", 0666, prEntry_tp, &tp_sweep_wake_proc_fops);
+		if(prEntry_sweep_wake_tap == NULL){
+			ret = -ENOMEM;
+			printk(KERN_INFO"init_synaptics_proc: Couldn't create proc entry\n");
+		}
+
+
 	prEntry_coodinate = proc_create("coordinate", 0444, prEntry_tp, &coordinate_proc_fops);
 	if(prEntry_coodinate == NULL){
 		ret = -ENOMEM;
