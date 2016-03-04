@@ -168,7 +168,7 @@ int Down2UpSwip_gesture =0;//"down to up |"
 int Wgestrue_gesture =0;//"(W)"
 int Mgestrue_gesture =0;//"(M)"
 
-int DisableDouTapVibration = 0;
+int DisableGestureHaptic = 0;
 #endif
 
 /*********************for Debug LOG switch*******************/
@@ -214,6 +214,7 @@ static struct proc_dir_entry *prEntry_tpreset = NULL;
 static struct proc_dir_entry *prEntry_tp_proc = NULL;
 static struct input_dev * boeffla_syn_pwrdev;
 static DEFINE_MUTEX(boeffla_syn_pwrkeyworklock);
+void qpnp_hap_ignore_next_request(void);
 
 #ifdef SUPPORT_TP_SLEEP_MODE
 	static atomic_t sleep_enable;
@@ -1576,21 +1577,40 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 
 
 	synaptics_get_coordinate_point(ts);
-	if((gesture == DouTap && DouTap_gesture && !DisableDouTapVibration)||(gesture == RightVee && RightVee_gesture)\
+	if((gesture == DouTap && DouTap_gesture)||(gesture == RightVee && RightVee_gesture)\
         ||(gesture == LeftVee && LeftVee_gesture)||(gesture == UpVee && UpVee_gesture)\
         ||(gesture == Circle && Circle_gesture)||(gesture == DouSwip && DouSwip_gesture)){
+
+		// check if haptic feedback for gesture should be suppressed
+		if (DisableGestureHaptic)
+			qpnp_hap_ignore_next_request();
+
         gesture_upload = gesture;
 		input_report_key(ts->input_dev, keyCode, 1);
 		input_sync(ts->input_dev);
 		input_report_key(ts->input_dev, keyCode, 0);
 		input_sync(ts->input_dev);
     }
-    else if ((gesture == DouTap && DouTap_gesture && DisableDouTapVibration) ||
-		(gesture == Left2RightSwip && Left2RightSwip_gesture)||(gesture == Right2LeftSwip && Right2LeftSwip_gesture)\
-        ||(gesture == Up2DownSwip && Up2DownSwip_gesture)||(gesture == Down2UpSwip && Down2UpSwip_gesture))
+    else if ((gesture == Left2RightSwip && Left2RightSwip_gesture)||(gesture == Right2LeftSwip && Right2LeftSwip_gesture)\
+			||(gesture == Up2DownSwip && Up2DownSwip_gesture)||(gesture == Down2UpSwip && Down2UpSwip_gesture))
     {
-		// press powerkey
-		schedule_work(&boeffla_syn_presspwr_work);
+		// if user has double tap gesture enabled, we can still deliver haptic feedback also for swipe gestures (incl. proximity check)
+		// hence we check if this is the case and if user wants to receive haptic feedback
+		// if not, send power key
+		if (DouTap_gesture && !DisableGestureHaptic)
+		{
+			gesture = DouTap;
+			gesture_upload = gesture;
+			input_report_key(ts->input_dev, keyCode, 1);
+			input_sync(ts->input_dev);
+			input_report_key(ts->input_dev, keyCode, 0);
+			input_sync(ts->input_dev);
+		}
+		else
+		{
+			// press powerkey
+			schedule_work(&boeffla_syn_presspwr_work);
+		}
 	}
 	else{
 		//if(is_project(OPPO_14005) || is_project(OPPO_15011)){
@@ -2338,7 +2358,7 @@ static int tp_sweep_wake_read_func(struct file *file, char __user *user_buf, siz
 {
 	int ret = 0;
 	char page[PAGESIZE];
-	ret = sprintf(page, "%d\n", Left2RightSwip_gesture + (DisableDouTapVibration * BIT1));
+	ret = sprintf(page, "%d\n", Left2RightSwip_gesture + (DisableGestureHaptic * BIT1));
 	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
 	return ret;
 }
@@ -2359,7 +2379,7 @@ static int tp_sweep_wake_write_func(struct file *file, const char __user *buffer
 	Up2DownSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
 	Down2UpSwip_gesture = (buf[0] & BIT0) ? 1 : 0;
 
-	DisableDouTapVibration = (buf[0] & BIT1) ? 1 : 0;
+	DisableGestureHaptic = (buf[0] & BIT1) ? 1 : 0;
 
 	if(DouTap_gesture||Circle_gesture||UpVee_gesture||LeftVee_gesture\
         ||RightVee_gesture||DouSwip_gesture\
