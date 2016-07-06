@@ -11,7 +11,7 @@
 #######################################
 
 BOEFFLA_VERSION="1.0-test-OOS-oneplusx"
-EXTENDED_CMDLINE="androidboot.selinux=permissive"
+EXTENDED_CMDLINE=""
 
 TOOLCHAIN="/opt/toolchains/arm-eabi-4.8/bin/arm-eabi-"
 
