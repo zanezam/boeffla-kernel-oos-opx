@@ -12,7 +12,7 @@
 # ********************************
 
 # kernel specification (hardware; type; target; url)
-KERNEL_SPECS="oneplusx;oos;oos2xx;http://boeffla.df-kunde.de/oneplusx/boeffla-kernel-oos/"
+KERNEL_SPECS="oneplusx;oos;oos2xx;http://kernel.boeffla.de/oneplusx/boeffla-kernel-oos/"
 
 # kernel features 
 # (1=enable-busybox,2=enable-frandom,3=wipe-cache,4=disable-zram-control)
