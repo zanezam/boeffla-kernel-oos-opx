@@ -395,12 +395,11 @@ fi
 # *******************
 
 if [ "get_ums" == "$1" ]; then
-#	if [ "`busybox grep 179 /sys/devices/platform/s3c-usbgadget/gadget/lun0/file`" ]; then
-#		echo "1"
-#	else
-#		echo "0"
-#	fi
-	echo ""
+	if [ "`busybox grep mmcblk1p1 /sys/devices/msm_dwc3/f9200000.dwc3/gadget/lun1/file`" ]; then
+		echo "1"
+	else
+		echo "0"
+	fi
 	exit 0
 fi
 
@@ -1313,9 +1312,19 @@ if [ "apply_ntfs" == "$1" ]; then
 	exit 0
 fi
 
-#if [ "apply_ums" == "$1" ]; then
-#	exit 0
-#fi
+if [ "apply_ums" == "$1" ]; then
+	if [ "1" == "$2" ]; then
+		echo "0" > /sys/devices/msm_dwc3/f9200000.dwc3/gadget/lun1/cdrom
+		/system/bin/setprop persist.sys.usb.config mass_storage,adb
+		echo "/dev/block/mmcblk1p1" > /sys/devices/msm_dwc3/f9200000.dwc3/gadget/lun1/file
+	fi
+
+	if [ "0" == "$2" ]; then
+		echo "" > /sys/devices/msm_dwc3/f9200000.dwc3/gadget/lun1/file
+		/system/bin/setprop persist.sys.usb.config mtp,adb
+	fi
+	exit 0
+fi
 
 
 # *******************
