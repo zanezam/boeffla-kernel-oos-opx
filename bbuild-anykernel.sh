@@ -17,7 +17,7 @@ ARCHITECTURE=arm
 COMPILER_FLAGS_KERNEL=""
 COMPILER_FLAGS_MODULE=""
 
-COMPILE_DTB="y"
+COMPILE_DTB="n"
 MODULES_IN_SYSTEM="y"
 OUTPUT_FOLDER=""
 
@@ -162,6 +162,9 @@ step3_compile()
 		
 		chmod 777 tools_boeffla/dtbtool
 		tools_boeffla/dtbtool -o $BUILD_PATH/$OUTPUT_FOLDER/arch/arm/boot/dt.img -s 2048 -p $BUILD_PATH/$OUTPUT_FOLDER/scripts/dtc/ $BUILD_PATH/$OUTPUT_FOLDER/arch/arm/boot/
+	else
+		# copy Image to zImage
+		cp $BUILD_PATH/$OUTPUT_FOLDER/arch/arm/boot/zImage-dtb $BUILD_PATH/$OUTPUT_FOLDER/arch/arm/boot/zImage
 	fi
 
 	TIMESTAMP2=$(date +%s)
