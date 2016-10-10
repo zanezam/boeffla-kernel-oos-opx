@@ -37,8 +37,8 @@
 /*****************************************/
 
 #define DRIVER_AUTHOR "andip71 (Lord Boeffla)"
-#define DRIVER_DESCRIPTION "Sweep2sleep for OnePlus One bacon"
-#define DRIVER_VERSION "1.1.0"
+#define DRIVER_DESCRIPTION "Sweep2sleep for OnePlus X"
+#define DRIVER_VERSION "1.1.1"
 #define LOGTAG "Boeffla s2s: "
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
@@ -127,8 +127,8 @@ static int DYNAMIC_X_SIZE3[DYNAMIC_BANKS] = {200};
 int s2s = 0;
 static int debug = 0;
 static int pwrkey_dur = 60;
-static int touch_x = 0;
-static int touch_y = 0;
+static int touch_x = -1;	// default to not trigger sleep after first wakeup
+static int touch_y = -1;	// default to not trigger sleep after first wakeup
 static int statusBarWithinTime = 0;
 
 static bool touch_x_called = false;
@@ -165,6 +165,9 @@ static struct delayed_work statusBarTimer;
 /* PowerKey work function */
 static void sweep2sleep_presspwr(struct work_struct * sweep2sleep_presspwr_work) 
 {
+	if (debug)
+		pr_info(LOGTAG"sweep2sleep_presspwr\n");
+
 	if (!mutex_trylock(&pwrkeyworklock))
 		return;
 	
@@ -175,8 +178,16 @@ static void sweep2sleep_presspwr(struct work_struct * sweep2sleep_presspwr_work)
 	input_event(sweep2sleep_pwrdev, EV_KEY, KEY_POWER, 0);
 	input_event(sweep2sleep_pwrdev, EV_SYN, 0, 0);
 	msleep(pwrkey_dur);
-    
-    mutex_unlock(&pwrkeyworklock);
+
+	// since OPX OOS3:
+	// touchscreen driver does not report coordinates anymore when screen is off,
+	// --> we need to make sure we set the last stored coordinates to something that does
+	// not wrongly trigger the double tap to sleep function again after a wake-up double tap.
+	touch_x = -1;
+	touch_y = -1;
+
+	mutex_unlock(&pwrkeyworklock);
+
 	return;
 }
 static DECLARE_WORK(sweep2sleep_presspwr_work, sweep2sleep_presspwr);
@@ -494,6 +505,9 @@ static struct input_handler s2s_input_handler =
 static int lcd_notifier_callback(struct notifier_block *this,
 								unsigned long event, void *data)
 {
+	if (debug)
+		pr_info(LOGTAG"lcd_notifier_callback %lu\n", event);
+
 	switch (event) 
 	{
 		case LCD_EVENT_ON_END:
